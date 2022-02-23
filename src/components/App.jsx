@@ -1,71 +1,48 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Modal from './Modal/Modal';
 import Button from './Button/Button';
 
-class App extends Component {
-  state = {
-    searchImages: '',
-    searchPage: 1,
-    currentOpenImage: null,
-    currentTags: null,
-    showModal: false,
+function App() {
+  const [searchImages, setSearchImages] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [searchPage, setSearchPage] = useState(1);
+  const [currentOpenImage, setCurrentOpenImage] = useState('');
+
+  const handleFormSubmit = searchImages => {
+    setSearchImages(searchImages);
+    setSearchPage(1);
   };
 
-  handleFormSubmit = searchImages => {
-    this.setState({
-      searchImages,
-      searchPage: 1,
-    });
+  const onClickButtonMore = () => {
+    setSearchPage(prevState => prevState + 1);
   };
 
-  onClickButtonMore = () => {
-    this.setState(prevState => ({ searchPage: prevState.searchPage + 1 }));
+  const handleCurrentImage = currentOpenImage => {
+    toggleModal();
+    setCurrentOpenImage(currentOpenImage);
   };
 
-  handleCurrentImage = (bigImage, tags) => {
-    this.setState({
-      currentOpenImage: bigImage,
-      showModal: true,
-      currentTags: tags,
-    });
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
-  };
-
-  render() {
-    const {
-      searchPage,
-      searchImages,
-      showModal,
-      currentTags,
-      currentOpenImage,
-    } = this.state;
-    return (
-      <>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery
-          page={searchPage}
-          searchImages={searchImages}
-          handleCurrentImage={this.handleCurrentImage}
-        >
-          <Button onClickMore={this.onClickButtonMore} />
-        </ImageGallery>
-        {showModal && (
-          <Modal
-            currentImage={currentOpenImage}
-            currentTags={currentTags}
-            onClose={this.toggleModal}
-          />
-        )}
-      </>
-    );
-  }
+  return (
+    <>
+      <Searchbar onSubmit={handleFormSubmit} />
+      <ImageGallery
+        page={searchPage}
+        searchImages={searchImages}
+        handleCurrentImage={handleCurrentImage}
+      >
+        <Button onClickMore={onClickButtonMore} />
+      </ImageGallery>
+      {showModal && (
+        <Modal currentImage={currentOpenImage} onClose={toggleModal} />
+      )}
+    </>
+  );
 }
 
 export default App;
